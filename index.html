@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yadgar</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23267F53'/><text x='50' y='78' font-size='72' font-family='Georgia, serif' font-weight='900' font-style='italic' text-anchor='middle' fill='%23FCCA59'>Y</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-mark"></span>
+        <span class="logo-text">Yadgar</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="2" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="2" fill="currentColor" opacity=".4"/><rect x="2" y="11" width="7" height="7" rx="2" fill="currentColor" opacity=".4"/><rect x="11" y="11" width="7" height="7" rx="2" fill="currentColor"/></svg></span>
+          <span>Tableau de bord</span>
+        </button>
+        <button class="nav-item" data-view="depenses">
+          <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V6z" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span>Mes dépenses</span>
+        </button>
+        <button class="nav-item" data-view="revenus">
+          <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M6 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Mes revenus</span>
+        </button>
+        <button class="nav-item" data-view="recurrents">
+          <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 1110.93-3.36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 4v3h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Récurrents</span>
+        </button>
+        <button class="nav-item" data-view="categories">
+          <span class="nav-icon"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 10l5-2.5M10 10V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span>Catégories</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="month-selector">
+          <button class="month-btn" id="prevMonth"><svg viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <span id="currentMonthLabel">Juin 2026</span>
+          <button class="month-btn" id="nextMonth"><svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="view active">
+        <header class="view-header">
+          <div><p class="view-eyebrow">Bienvenue</p><h1 class="view-title">Tableau de bord</h1></div>
+          <button class="btn-primary" id="openModal">Ajouter une dépense</button>
+        </header>
+        <div class="cards-row">
+          <div class="stat-card card-mint"><p class="stat-label">Revenus ce mois</p><p class="stat-value" id="totalRevenus">0,00 €</p></div>
+          <div class="stat-card card-rose"><p class="stat-label">Dépenses ce mois</p><p class="stat-value" id="totalDepenses">0,00 €</p></div>
+          <div class="stat-card card-cream" id="balanceCard"><p class="stat-label">Solde restant</p><p class="stat-value" id="solde">0,00 €</p></div>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel"><h2 class="panel-title">Dernières dépenses</h2><ul class="transaction-list" id="recentList"><li class="empty-state">Aucune dépense ce mois. Commence par en ajouter une.</li></ul></section>
+          <section class="panel"><h2 class="panel-title">Répartition par catégorie</h2><div class="chart-wrap"><canvas id="catChart" width="220" height="220"></canvas><div class="chart-legend" id="chartLegend"></div></div></section>
+        </div>
+      </div>
+
+      <!-- DEPENSES -->
+      <div id="view-depenses" class="view">
+        <header class="view-header">
+          <div><p class="view-eyebrow">Suivi</p><h1 class="view-title">Mes dépenses</h1></div>
+          <div class="header-actions">
+            <input type="text" class="search-input" id="searchDepenses" placeholder="Rechercher...">
+            <div class="custom-select-wrap" id="filterCatWrap">
+              <button class="custom-select-trigger" id="filterCatTrigger">Toutes les catégories</button>
+              <div class="custom-select-dropdown" id="filterCatDropdown"></div>
+              <input type="hidden" id="filterCat" value="">
+            </div>
+            <button class="btn-primary" id="openModalDep">Ajouter</button>
+          </div>
+        </header>
+        <div class="panel"><ul class="transaction-list full" id="allDepList"><li class="empty-state">Aucune dépense ce mois.</li></ul></div>
+      </div>
+
+      <!-- REVENUS -->
+      <div id="view-revenus" class="view">
+        <header class="view-header">
+          <div><p class="view-eyebrow">Entrées</p><h1 class="view-title">Mes revenus</h1></div>
+          <button class="btn-primary" id="openModalRev">Ajouter un revenu</button>
+        </header>
+        <div class="panel"><ul class="transaction-list full" id="allRevList"><li class="empty-state">Aucun revenu ce mois.</li></ul></div>
+      </div>
+
+      <!-- RECURRENTS -->
+      <div id="view-recurrents" class="view">
+        <header class="view-header">
+          <div><p class="view-eyebrow">Automatique</p><h1 class="view-title">Récurrents</h1></div>
+          <button class="btn-primary" id="openModalRec">Nouveau récurrent</button>
+        </header>
+        <div class="recurrents-grid" id="recGrid">
+          <p class="empty-state" style="padding:40px 0">Aucun élément récurrent. Ajoutes-en un pour commencer.</p>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div id="view-categories" class="view">
+        <header class="view-header">
+          <div><p class="view-eyebrow">Organisation</p><h1 class="view-title">Catégories</h1></div>
+          <button class="btn-primary" id="openModalCat">Nouvelle catégorie</button>
+        </header>
+        <div class="categories-grid" id="catGrid"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL TRANSACTION -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="modal-close" id="closeModal"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <h2 class="modal-title" id="modalTitle">Nouvelle dépense</h2>
+      <form id="transactionForm">
+        <input type="hidden" id="transactionType" value="depense">
+        <div class="form-group">
+          <label>Intitulé</label>
+          <input type="text" id="fieldLabel" placeholder="Ex : Courses Lidl" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Montant (€)</label>
+            <input type="number" id="fieldAmount" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <div class="datepicker-wrap" id="datepickerWrap">
+              <button type="button" class="datepicker-trigger" id="datepickerTrigger">Choisir une date</button>
+              <input type="hidden" id="fieldDate" required>
+            </div>
+          </div>
+        </div>
+        <div class="datepicker-panel" id="datepickerPanel"></div>
+        <div class="form-group" id="catGroup">
+          <label>Catégorie</label>
+          <div class="custom-select-wrap" id="fieldCatWrap">
+            <button type="button" class="custom-select-trigger" id="fieldCatTrigger">Choisir...</button>
+            <div class="custom-select-dropdown" id="fieldCatDropdown"></div>
+            <input type="hidden" id="fieldCat">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Note <span class="optional">(facultatif)</span></label>
+          <input type="text" id="fieldNote" placeholder="Ex : avec Yasmine">
+        </div>
+        <button type="submit" class="btn-primary full">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL RECURRENT -->
+  <div class="modal-overlay" id="recModalOverlay">
+    <div class="modal">
+      <button class="modal-close" id="closeRecModal"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <h2 class="modal-title">Nouveau récurrent</h2>
+      <form id="recForm">
+        <div class="form-group">
+          <label>Type</label>
+          <div class="toggle-group" id="recTypeToggle">
+            <button type="button" class="toggle-btn active" data-val="depense">Dépense</button>
+            <button type="button" class="toggle-btn" data-val="revenu">Revenu</button>
+          </div>
+          <input type="hidden" id="recType" value="depense">
+        </div>
+        <div class="form-group">
+          <label>Intitulé</label>
+          <input type="text" id="recLabel" placeholder="Ex : Salaire alternance" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Montant (€)</label>
+            <input type="number" id="recAmount" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>Fréquence</label>
+            <div class="custom-select-wrap" id="recFreqWrap">
+              <button type="button" class="custom-select-trigger" id="recFreqTrigger">Mensuel</button>
+              <div class="custom-select-dropdown" id="recFreqDropdown"></div>
+              <input type="hidden" id="recFreq" value="monthly">
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="recCatGroup">
+          <label>Catégorie</label>
+          <div class="custom-select-wrap" id="recCatWrap">
+            <button type="button" class="custom-select-trigger" id="recCatTrigger">Choisir...</button>
+            <div class="custom-select-dropdown" id="recCatDropdown"></div>
+            <input type="hidden" id="recCat">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Note <span class="optional">(facultatif)</span></label>
+          <input type="text" id="recNote" placeholder="Ex : Netflix">
+        </div>
+        <button type="submit" class="btn-primary full">Créer le récurrent</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL CATEGORIE -->
+  <div class="modal-overlay" id="catModalOverlay">
+    <div class="modal">
+      <button class="modal-close" id="closeCatModal"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <h2 class="modal-title">Nouvelle catégorie</h2>
+      <form id="catForm">
+        <div class="form-group"><label>Nom</label><input type="text" id="catName" placeholder="Ex : Beauté" required></div>
+        <div class="form-group"><label>Couleur</label><div class="color-picker" id="colorPicker"></div><input type="hidden" id="catColor" value="#99B7F5"></div>
+        <button type="submit" class="btn-primary full">Créer la catégorie</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
